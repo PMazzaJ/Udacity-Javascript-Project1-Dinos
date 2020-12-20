@@ -67,7 +67,6 @@
         return this.dinos;        
     }     
 
-
     /**
     * @description Creates Human object with data returned from form
     * @returns {object} - Human
