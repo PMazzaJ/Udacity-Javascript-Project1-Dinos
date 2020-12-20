@@ -1,4 +1,3 @@
-
     
     const dinos = [];
     let human = {};
@@ -65,25 +64,7 @@
     */
     const getDinos = () => {       
         return this.dinos;        
-    }     
-
-    /**
-    * @description Creates Human object with data returned from form
-    * @returns {object} - Human
-    */
-    const getHumanData = () => {
-                        
-        const name = document.querySelector("#name").value;
-        const feet = document.querySelector("#feet").value;
-        const inches = document.querySelector("#inches").value;
-        const weight = document.querySelector("#weight").value;
-        const diet = document.querySelector("#diet").value;     
-        const location = document.querySelector("#location").value;     
-        const height = feet;      
-
-        return new Human(name, weight, height, diet, location);    
-    }
-
+    }       
 
     /**
     * @description Add eventListener to btn
@@ -125,11 +106,12 @@
         gridData.insert(4, human);
 
         //hide form
-        const form = document.querySelector(".form-container");
-        toggleForm(form);
+        const form = document.querySelector(".form-container");        
+        changeElemVisibility(form);
 
         //create tiles                        
         generateGrid(gridData, human);        
+
     }
         
     /**
@@ -143,10 +125,8 @@
         tileContent.forEach((content) => {
 
             const tile = document.createElement("div");            
+            const tileTitle = content instanceof Dino ? content.species : content.name;          
             tile.classList.add("grid-item");          
-
-            const tileTitle = content instanceof Dino ? content.species : content.name;            
-        
             
             tile.innerHTML = `
                 <h3> ${tile.innerHTML = tileTitle}</h3>
@@ -269,17 +249,21 @@
     };
 
     /**
-     * @description Hide or show form depending on it's state.
-     * @param {HTMLElement} elem 
+     * @description Hide or show elements depending on it's current visibility
+     * @param {HTMLElement} - any number of HTML elements 
     */
-    const toggleForm = (elem) => {
+    const changeElemVisibility = (...args) => {
         
         // If the element is visible, hide it
-        if (window.getComputedStyle(elem).display === 'block') {
-            hide(elem);
-            return;
-        }
-    
-        // Otherwise, show it
-        show(elem);    
+
+        args.forEach((elem) => {
+            if (window.getComputedStyle(elem).display === 'block') {
+                hide(elem);
+                return;
+            }
+        
+            // Otherwise, show it
+            show(elem);    
+        });
+
     };
