@@ -55,7 +55,7 @@
     * @description Set array of dinos to global variable, so i can access it later with getDinos();   
     * @param {array} dinos - Array of dinos
     */
-    setDinos = (dinos) => {
+    const setDinos = (dinos) => {
        this.dinos = dinos;       
     }
 
@@ -63,33 +63,16 @@
     * @description Getter for dinos   
     * @returns {array} this.dinos - Array of dinos 
     */
-    getDinos = () => {       
+    const getDinos = () => {       
         return this.dinos;        
-    }    
+    }     
 
-    /**
-    * @description Set human object to global variable, so i can access it later with getHuman();   
-    * @param {Object} human - human object
-    */
-    setHuman = (human) => {
-        this.human = human;
-    }
-
-    /**
-    * @description Getter for human   
-    * @returns {array} this.human - human object
-    */
-    getHuman = (human) => {
-        return this.human;
-    }
-
-    // Create Human Object
 
     /**
     * @description Creates Human object with data returned from form
     * @returns {object} - Human
     */
-    getHumanData = () => {
+    const getHumanData = () => {
                         
         const name = document.querySelector("#name").value;
         const feet = document.querySelector("#feet").value;
@@ -102,7 +85,6 @@
         return new Human(name, weight, height, diet, location);    
     }
 
-    // Use IIFE to get human data from form    
 
     /**
     * @description Add eventListener to btn
@@ -121,11 +103,24 @@
     /**
     * @description Get data from form, hide form, compare data, create and append tiles
     */
-    handleFormSubmit = () => {
+    const handleFormSubmit = () => {
                 
-        let gridData = getDinos();        
-        const human = getHumanData();
-        setHuman(human);
+        let gridData = getDinos();    
+
+        // Use IIFE to get human data from form      
+        // Create Human Object
+        
+        const human = (() => {         
+            const name = document.querySelector("#name").value;
+            const feet = document.querySelector("#feet").value;
+            const inches = document.querySelector("#inches").value;
+            const weight = document.querySelector("#weight").value;
+            const diet = document.querySelector("#diet").value;     
+            const location = document.querySelector("#location").value;     
+            const height = feet;      
+    
+            return new Human(name, weight, height, diet, location);    
+        })();
                 
         gridData = gridData.sort(() => Math.random() - 0.5);
         gridData.insert(4, human);
@@ -135,20 +130,20 @@
         toggleForm(form);
 
         //create tiles                        
-        generateGrid(gridData);        
+        generateGrid(gridData, human);        
     }
         
     /**
     * @description Generate html grid, append tiles and populate with data
     */
-    generateGrid = (tileContent) => {     
+    const generateGrid = (tileContent, human) => {     
 
         const grid = document.querySelector("#grid");                     
 
         // Generate Tiles for each Dino in Array
         tileContent.forEach((content) => {
 
-            let tile = document.createElement("div");            
+            const tile = document.createElement("div");            
             tile.classList.add("grid-item");          
 
             const tileTitle = content instanceof Dino ? content.species : content.name;            
@@ -157,7 +152,7 @@
             tile.innerHTML = `
                 <h3> ${tile.innerHTML = tileTitle}</h3>
                 <img src="images/${content.species}.png" alt="Dinosaur or Human">                                            
-                ${getFact(content)}                                               
+                ${getFact(content, human)}                                               
             `;                                
 
             // Add tiles to DOM
@@ -171,15 +166,17 @@
     * @description manage how facts are displayed in UI
     * @returns {String} - random fact for dinos | nothing for human | pigeon fact for pigeon
     */
-    getFact = (content) => {        
+    const getFact = (content, human) => {      
 
         if (content instanceof Dino && content.species !== "Pigeon") {
-            return "<p>" + compareFacts(content) + "</p>";
-        } else if (content instanceof Dino && content.species === "Pigeon") {
-            return "<p>" + content.fact + "</p>";      
-        } else {
-            return "";
+            return "<p>" + compareFacts(content, human) + "</p>";
         }
+
+        if (content instanceof Dino && content.species === "Pigeon") {
+            return "<p>" + content.fact + "</p>";      
+        }
+
+        return "";
           
     }
    
@@ -187,12 +184,11 @@
     * @description compare dino data with user input
     * @returns {String} - single random fact
     */
-    compareFacts = (dino) => {
+    const compareFacts = (dino, human) => {
 
-        const human = getHuman();   
-        const dietFact = compareDiet(dino);        
-        const weightFact = compareWeight(dino);
-        const locationFact = compareLocation(dino);
+        const dietFact = compareDiet(dino, human);        
+        const weightFact = compareWeight(dino, human);
+        const locationFact = compareLocation(dino, human);
 
         const facts = [];
         facts.push(weightFact, dino.fact);
@@ -210,9 +206,9 @@
     * @description compare dino and human location
     * @returns {String} - location fact
     */
-    compareLocation = (dino) => {    
+    const compareLocation = (dino, human) => {    
 
-        const humanLocation = getHumanData().location;        
+        const humanLocation = human.location;        
         const dinoLocation = dino.where.split(",").map((eachLocation) => {
             return eachLocation.trim();
         });               
@@ -227,9 +223,9 @@
     * @description compare dino and human weight
     * @returns {String} - weight fact
     */
-    compareWeight = (dino) => {
+    const compareWeight = (dino, human) => {
 
-        const humanWeight = getHumanData().weight;
+        const humanWeight = human.weight;
         const dinoWeight = dino.weight;
 
         if (humanWeight > dinoWeight) {            
@@ -248,9 +244,9 @@
     * @description compare dino and human diet
     * @returns {String} - diet fact
     */
-    compareDiet = (dino) => {     
+    const compareDiet = (dino, human) => {     
 
-        const humanDiet = getHuman().diet;        
+        const humanDiet = human.diet;        
         
         if (humanDiet.toLowerCase() == dino.diet) {
             return `You and ${dino.species} have the same diet!`
@@ -277,7 +273,7 @@
      * @description Hide or show form depending on it's state.
      * @param {HTMLElement} elem 
     */
-    toggleForm = (elem) => {
+    const toggleForm = (elem) => {
         
         // If the element is visible, hide it
         if (window.getComputedStyle(elem).display === 'block') {
